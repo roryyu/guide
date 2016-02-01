@@ -19,11 +19,18 @@ sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install
 ## install httpd
 yum install gcc zlib-devel openssl-devel
 ### install pcre
+```sh
 tar -zvxf pcre-8.36.tar.gz
+
 cd pcre-8.36
+
 ./configure -prefix=/usr/local/pcre
+
 make
+
 make install
+
+```
 ### install apr
 tar -zvxf apr-1.52.tar.gz
 cd apr-1.52

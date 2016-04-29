@@ -1,10 +1,14 @@
-# Centos:[zsh/httpd/php]
+# Centos:[zsh/httpd/php/tomcat]
 
 ## go online
 ```sh
 /etc/sysconfig/network-scripts/ifcfg-xxxxx
 ONBOOT=no =>ONBOOT=yes
 service network restart
+```
+## add user to root group
+```sh
+sudo usermod -g root [username]
 ```
 ## Use ifconfig and netstat
 ```sh
@@ -20,6 +24,18 @@ yum install wget
 yum install zsh
 sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
 ```
+### add PATH
+```sh
+vi ~/.zshrc
+ZSH_THEME="alanpeabody"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin:/usr/local/php5/bin:/usr/local/apache2/bin:/root/node/bin"
+source ~/.zshrc
+```
+### search execute file
+```sh
+which xxx
+```
+
 ## install httpd
 ```sh
 yum install gcc zlib-devel openssl-devel
@@ -57,6 +73,26 @@ cd httpd-2.4.18
 ### start httpd
 ```sh
 /usr/local/apache2/bin/apachectl start
+```
+### add httpd to service
+create service
+```sh
+cp /usr/local/apache2/bin/apachectl /etc/rc.d/init.d/httpd
+```
+change /etc/rc.d/init.d/httpd to add
+```sh
+# chkconfig: 2345 10 90
+# description: Activates/Deactivates Apache Web Server
+```
+add and start service
+```sh
+chkconfig --add httpd
+chkconfig httpd on
+service httpd start
+```
+show services list
+```sh
+chkconfig --list
 ```
 ### open 80 port
 ```sh
@@ -96,4 +132,85 @@ phpize
 make
 make install
 add php.ini extension=curl.so
+```
+
+## install node
+```sh
+tar -zxvf node-vx.x.x-linux-x86.tar.gz
+vi .zshrc
+export PATH="$PATH:/root/node/bin"
+source .zshrc
+```
+install cnpm
+```sh
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+```
+
+## check bit
+```sh
+getconf LONG_BIT
+```
+
+## install Tomcat 9
+install java
+```sh
+rpm -qa|grep java
+rpm -e --nodeps tzdata-java-2012c-1.el6.noarch
+rpm -e --nodeps java-1.6.0-openjdk-1.6.0.0-1.45.1.11.1.el6.i686
+rpm -qa|grep gcj
+rpm -e --nodeps libgcj-4.4.7-16.el6.i686
+mkdir /usr/java
+cd /usr/java
+rpm -ivh jdk-8u73-linux-i586.rpm
+vi /etc/profile
+	add:export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL
+		export JAVA_HOME=/usr/java/jdk1.8.0_73
+		export PATH=$JAVA_HOME/bin:$PATH
+		export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+source /etc/profile
+java -version
+```
+
+
+
+open firewall
+```sh
+vim /etc/sysconfig/iptables
+	add:-A INPUT -p tcp --dport 6379 -j ACCEPT
+		-A INPUT -j REJECT --reject-with icmp-host-prohibited
+service iptables restart
+```
+install tomcat
+```sh
+cd /var/local
+tar -zxvf apache-tomcat-9.0.0.M3.tar.gz
+mv apache-tomcat-9.0.0.M3 tomcat9
+cd tomcat9/bin
+./startup.sh
+```
+watch tomcat logs
+```sh
+tail -f catalina.out
+```
+## tar
+zip
+```sh
+tar -zxvf filename.tar.gz 
+```
+unzip
+```sh
+tar -zcvf filename.tar.gz folder
+```
+//TODO
+
+## install mysql
+
+## install redis
+```sh
+tar -zxf redis-3.0.7.tar.gz
+cd redis-2.8.5
+make
+sudo make install
+cd utils
+sudo ./install_server.sh 
 ```

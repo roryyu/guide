@@ -214,3 +214,32 @@ sudo make install
 cd utils
 sudo ./install_server.sh 
 ```
+
+## install weblogic
+start
+```sh
+nohup ./startWebLogic.sh &
+```
+stop
+```sh
+nohup ./stopWebLogic.sh &
+```
+logs
+```sh
+tail -f nohup.out
+```
+
+install
+```sh
+[root@demo ~]# groupadd dba
+[root@demo ~]# useradd -g dba oracle  
+[root@demo ~]# passwd oracle
+
+[root@demo ~]# export JAVA_HOME
+[root@demo ~]# PATH=$JAVA_HOME/bin:$PATH  
+[root@demo ~]# export PATH
+
+[oracle@demo ~]# java -jar -Xmx1024m -XX:MaxPermSize=512M fmw_12.2.1.0.0_wls_quick.jar
+[oracle@demo ~]# mkdir user_projects/domains/myDomain
+[oracle@demo ~]# java weblogic.Server
+```
